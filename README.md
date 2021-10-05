@@ -38,30 +38,28 @@ Tracker: https://www.pivotaltracker.com/projects/2532883
 #### Backlog Items (From the Pivotal Tracker)
 
 Display of Healthcare Account Information <br>
-&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a patient I want to be able to view my information through the mobile application so that I can view it at any time.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a patient I want to be able to view my information through the mobile application so that I can view information relevant to my account such as my username, account number, and account details at any time.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Details: Basic information about the user (username, account number, etc.) is displayed on an application.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 1<br>
 <br>
 Coordinate With Other Teams to Develop A Consistent UI <br>
-&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user of the mobile application I want to have a consistent UI between browser and mobile application so that I do not get confused.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user I want to easily navigate my account, schedule, and messages on both my computer and application so that my experience is more consistent and less confusing.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Details: Discussions are held with other teams to ensure that our UI is consistent with theirs.  Additionally, we will make sure all the UI works on our application.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 3<br>
 <br>
 Display Insurance Information <br>
-&nbsp;&nbsp;&nbsp;&nbsp;User Story: 
-As a user, I want to be able to quickly view my insurance information, so that I can reference when either paying bills, or when discussing my healthcare with my doctor or provider.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to quickly view my insurance information, so that I can reference when either paying bills, or when discussing my healthcare with my doctor or provider.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Details: To ensure the UI is working, we will start displaying more complex information, namely the user's insurance information. Additionally, this will help us build up functionality.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 1<br>
 <br>
 Send Messages to Doctor <br>
-&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to get in touch with a doctor or nurse quickly, so that I can get help if I need it. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to get in touch with a doctor or nurse quickly, so that I can ask them questions about perscriptions, upcoming appointments, or anything else related to my health needs. <br>
 &nbsp;&nbsp;&nbsp;&nbsp;Details: Messages can be sent from the patient using the application to their doctor.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 3<br>
 <br>
 Store Messages From User and Doctor <br>
-&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to view archived messages, so that I can remind myself of previous conversations.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Details: 
-Messages sent from the user, via the application, are stored in the database.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to view messages with my doctor, both old and new, so that I can come to a better understanding of my healthcare over time.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Details: Messages sent to or from the user, via the application, are retained between sessions.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 1<br>
 <br>
 View Messages From Doctor <br>
@@ -75,17 +73,17 @@ Notifications for New Messages <br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 1<br>
 <br>
 Display Appointment Information <br>
-&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to view all of my future appointments, so that I can make sure not to miss them and so that I don't make conflicting appointments.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to view all of my future appointments (with information such as the doctor I'll be seeing, when, and where) so that I can make sure not to miss them and so that I don't make conflicting appointments.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Details: The UI is expanded to include information about appointments as our functionality expands.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 2<br>
 <br>
 Notifications for Appointments <br>
-&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to receive notifications based on upcoming appointment times, so that I don't miss an appointment.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to receive notifications based on upcoming appointment times, so that I'm reminded of appointments and don't miss them.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Details: Just as with message notifications, we will make the appointments more useful by ensuring patients are alerted about upcoming ones.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 1<br>
 <br>
 Display Visual Representation of Appointments <br>
-&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to view my appointment schedule quickly and concisely, so that I can easily understand my upcoming appointments. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;User Story: As a user, I want to be able to view my appointment schedule in a calendar format, so that I can easily understand my upcoming appointments and when they will occur. <br>
 &nbsp;&nbsp;&nbsp;&nbsp;Details: We will display information about appointments in a more visually clear way (likely in the form of a calendar) to make it easier to use.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Story Points: 2<br>
 <br>
