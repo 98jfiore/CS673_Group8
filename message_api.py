@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
+from mock.mock import call
 import pandas as pd
 import ast
 import mysql.connector
@@ -20,8 +21,16 @@ get_convo_query = ("""SELECT senderId, receiverId, messageBody, timeSent
 add_message = ("""INSERT INTO messages
               VALUES (%s, %s, %s, CURRENT_TIMESTAMP, NULL)""")
 
+get_all_convo_query = ("""SELECT DISTINCT receiverId
+              FROM messages
+              WHERE senderId=%s UNION SELECT DISTINCT senderId FROM messages WHERE receiverId=%s""")
+
 app = Flask(__name__)
 api = Api(app)
+
+#Here for the express purpose of making tests easier
+def call_query(curs, query, spec):
+  curs.execute(query, spec)
 
 class Messages(Resource):
   def get(self):
@@ -29,21 +38,26 @@ class Messages(Resource):
 
     parser.add_argument('userId', required=True)
     parser.add_argument('contactId', required=True)
-
+    
     args = parser.parse_args()
-
-    resp = {"messages": []}
-
-    cursor.execute(get_convo_query, (args['userId'],args['contactId'],args['contactId'],args['userId'],))
     
-    for (senderId, receiverId, messageBody, timeSent) in cursor:
-      message = {"text": messageBody,
-                  "sender": senderId,
-                  "receiver": receiverId,
-                  "sendTime": timeSent.strftime("%m/%d/%Y, %H:%M:%S")}
-      resp['messages'].append(message)
-    
-    return resp
+    try:
+      resp = {"code": 200, "messages": []}
+
+      #cursor.execute(get_convo_query, (args['userId'],args['contactId'],args['contactId'],args['userId'],))
+      call_query(cursor, get_convo_query, (args['userId'],args['contactId'],args['contactId'],args['userId'],))
+
+      for (senderId, receiverId, messageBody, timeSent) in cursor:
+        message = {"text": messageBody,
+                    "sender": senderId,
+                    "receiver": receiverId,
+                    "sendTime": timeSent.strftime("%m/%d/%Y, %H:%M:%S")}
+        resp['messages'].append(message)
+      
+      return resp
+    except:
+      return {"code": "400"}
+
   
   def post(self):
     parser = reqparse.RequestParser()
@@ -55,14 +69,37 @@ class Messages(Resource):
     args = parser.parse_args()
 
     try:
-      cursor.execute(add_message, (args['senderId'], args['receiverId'], args['messageBody']))
+      call_query(cursor, add_message, (args['senderId'], args['receiverId'], args['messageBody']))
       cnx.commit()
       return {"code": "200"}
     except:
       return {"code": "405"}
   pass
 
+class Conversations(Resource):
+  def get(self):
+    parser = reqparse.RequestParser()
+
+    parser.add_argument('userId', required=True)
+    
+    args = parser.parse_args()
+
+    try:
+      resp = {"code": 200, "conversations": []}
+      call_query(cursor, get_all_convo_query, 
+        (args['userId'],args['userId'],))
+
+      for (contactId) in cursor:
+        resp['conversations'].append(contactId[0])
+      
+      return resp
+    except:
+      return {"code": "400"}
+  pass
+
+
 api.add_resource(Messages, '/messages')
+api.add_resource(Conversations, '/allConversations')
 
 if __name__ == '__main__':
   app.run()
