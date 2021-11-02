@@ -25,6 +25,10 @@ get_all_convo_query = ("""SELECT DISTINCT receiverId
               FROM messages
               WHERE senderId=%s UNION SELECT DISTINCT senderId FROM messages WHERE receiverId=%s""")
 
+get_latest_message_query = ("""SELECT senderId, receiverId, messageBody, timeSent
+        FROM messages
+        WHERE (senderId=%s AND receiverId=%s) OR (senderId=%s AND receiverId=%s) ORDER BY timeSent DESC LIMIT 1""")
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -97,9 +101,35 @@ class Conversations(Resource):
       return {"code": "400"}
   pass
 
+class LatestMessages(Resource):
+  def get(self):
+    parser = reqparse.RequestParser()
+
+    parser.add_argument('userId', required=True)
+    parser.add_argument('contactId', required=True)
+    
+    args = parser.parse_args()
+
+    try:
+      resp = {"code": 200}
+      call_query(cursor, get_latest_message_query, 
+        (args['userId'],args['contactId'],args['contactId'],args['userId'],))
+
+      for (senderId, receiverId, messageBody, timeSent) in cursor:
+        resp["text"] = messageBody
+        resp["sender"] = senderId,
+        resp["receiver"] = receiverId,
+        resp["sendTime"] = timeSent.strftime("%m/%d/%Y, %H:%M:%S")
+
+      return resp
+    except:
+      return {"code": "400"}
+  pass
+
 
 api.add_resource(Messages, '/messages')
 api.add_resource(Conversations, '/allConversations')
+api.add_resource(LatestMessages, '/latestMessages')
 
 if __name__ == '__main__':
   app.run()

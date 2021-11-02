@@ -106,3 +106,19 @@ class TestMessages:
     assert len(response["conversations"]) is 2
     assert "bbbb" in response["conversations"]
     assert "cccc" in response["conversations"]
+  
+  @patch('message_api.call_query', mock_call_query)
+  def test_latest_messages_bad(self, client):
+    rv = client.get('/latestMessages')
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert "Missing" in response["message"]["userId"]
+
+    rv = client.get('/latestMessages?userId=aaaa')
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert "Missing" in response["message"]["contactId"]
+  
+  @patch('message_api.call_query', mock_call_query)
+  def test_all_conversations_good(self, client):
+    rv = client.get('/latestMessages?userId=aaaa&contactId=bbbb')
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert "Goodbye Forever" in response["text"]
