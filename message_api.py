@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_restful import Resource, Api, reqparse
 from mock.mock import call
 import pandas as pd
@@ -36,100 +36,97 @@ api = Api(app)
 def call_query(curs, query, spec):
   curs.execute(query, spec)
 
-class Messages(Resource):
-  def get(self):
-    parser = reqparse.RequestParser()
+@app.route('/messages/')
+def messages():
+  #argument('userId', required=True)
+  #argument('contactId', required=True)
 
-    parser.add_argument('userId', required=True)
-    parser.add_argument('contactId', required=True)
+  try:
+    args = request.get_json()
+    resp = {"code": 200, "messages": []}
+
+    # SELECT senderId, receiverId, messageBody, timeSent
+    # FROM messages
+    # WHERE (senderId=%s AND receiverId=%s) OR (senderId=%s AND receiverId=%s) ORDER BY timeSent""")
+    call_query(cursor, get_convo_query, (args['userId'],args['contactId'],args['contactId'],args['userId'],))
+
+    for (senderId, receiverId, messageBody, timeSent) in cursor:
+      message = {"text": messageBody,
+                  "sender": senderId,
+                  "receiver": receiverId,
+                  "sendTime": timeSent.strftime("%m/%d/%Y, %H:%M:%S")}
+      resp['messages'].append(message)
     
-    args = parser.parse_args()
+    return jsonify(resp), 200
+  except:
+    return jsonify({"code": 400}), 400
+
+@app.route('/message/', methods=['POST'])
+def post_message():
+  #argument('senderId', required=True)
+  #argument('receiverId', required=True)
+  #argument('messageBody', required=True)
+
+  try:
+    args = request.get_json()
+    # INSERT INTO messages
+    # VALUES (%s, %s, %s, CURRENT_TIMESTAMP, NULL)
+    call_query(cursor, add_message, (args['senderId'], args['receiverId'], args['messageBody']))
+    cnx.commit()
+    return jsonify({"code": 200}), 200
+  except:
+    return jsonify({"code": 405}), 405
+
+@app.route('/allConversations/')
+def allConvos():
+  #argument('userId', required=True)
+
+  try:
+    args = request.get_json()
+    resp = {"code": 200, "conversations": []}
     
-    try:
-      resp = {"code": 200, "messages": []}
+    # SELECT DISTINCT receiverId
+    # FROM messages
+    # WHERE senderId=%s UNION 
+    #   SELECT DISTINCT senderId
+    #   FROM messages 
+    #   WHERE receiverId=%s
+    call_query(cursor, get_all_convo_query, 
+      (args['userId'],args['userId'],))
 
-      #cursor.execute(get_convo_query, (args['userId'],args['contactId'],args['contactId'],args['userId'],))
-      call_query(cursor, get_convo_query, (args['userId'],args['contactId'],args['contactId'],args['userId'],))
-
-      for (senderId, receiverId, messageBody, timeSent) in cursor:
-        message = {"text": messageBody,
-                    "sender": senderId,
-                    "receiver": receiverId,
-                    "sendTime": timeSent.strftime("%m/%d/%Y, %H:%M:%S")}
-        resp['messages'].append(message)
-      
-      return resp
-    except:
-      return {"code": "400"}
-
-  
-  def post(self):
-    parser = reqparse.RequestParser()
-
-    parser.add_argument('senderId', required=True, help='405')
-    parser.add_argument('receiverId', required=True, help='405')
-    parser.add_argument('messageBody', required=True, help='405')
-
-    args = parser.parse_args()
-
-    try:
-      call_query(cursor, add_message, (args['senderId'], args['receiverId'], args['messageBody']))
-      cnx.commit()
-      return {"code": "200"}
-    except:
-      return {"code": "405"}
-  pass
-
-class Conversations(Resource):
-  def get(self):
-    parser = reqparse.RequestParser()
-
-    parser.add_argument('userId', required=True)
+    for (contactId) in cursor:
+      resp['conversations'].append(contactId[0])
     
-    args = parser.parse_args()
+    return jsonify(resp), 200
+  except:
+    return jsonify({"code": 405}), 405
 
-    try:
-      resp = {"code": 200, "conversations": []}
-      call_query(cursor, get_all_convo_query, 
-        (args['userId'],args['userId'],))
+@app.route('/latestMessages')
+def latestMessages():
+  #argument('userId', required=True)
+  #argument('contactId', required=True)
 
-      for (contactId) in cursor:
-        resp['conversations'].append(contactId[0])
-      
-      return resp
-    except:
-      return {"code": "400"}
-  pass
+  try:
+    args = request.get_json()
+    resp = {"code": 200}
 
-class LatestMessages(Resource):
-  def get(self):
-    parser = reqparse.RequestParser()
+    # SELECT senderId, receiverId, messageBody, timeSent
+    # FROM messages
+    # WHERE (senderId=%s AND receiverId=%s) OR (senderId=%s AND receiverId=%s) 
+    # ORDER BY timeSent DESC 
+    # LIMIT 1
+    call_query(cursor, get_latest_message_query, 
+      (args['userId'],args['contactId'],args['contactId'],args['userId'],))
 
-    parser.add_argument('userId', required=True)
-    parser.add_argument('contactId', required=True)
-    
-    args = parser.parse_args()
+    for (senderId, receiverId, messageBody, timeSent) in cursor:
+      resp["text"] = messageBody
+      resp["sender"] = senderId,
+      resp["receiver"] = receiverId,
+      resp["sendTime"] = timeSent.strftime("%m/%d/%Y, %H:%M:%S")
 
-    try:
-      resp = {"code": 200}
-      call_query(cursor, get_latest_message_query, 
-        (args['userId'],args['contactId'],args['contactId'],args['userId'],))
-
-      for (senderId, receiverId, messageBody, timeSent) in cursor:
-        resp["text"] = messageBody
-        resp["sender"] = senderId,
-        resp["receiver"] = receiverId,
-        resp["sendTime"] = timeSent.strftime("%m/%d/%Y, %H:%M:%S")
-
-      return resp
-    except:
-      return {"code": "400"}
-  pass
-
-
-api.add_resource(Messages, '/messages')
-api.add_resource(Conversations, '/allConversations')
-api.add_resource(LatestMessages, '/latestMessages')
+    return jsonify(resp), 200
+  except:
+    return jsonify({"code": 405}), 405
 
 if __name__ == '__main__':
   app.run()
