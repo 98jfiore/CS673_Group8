@@ -1,8 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api, reqparse
 from mock.mock import call
-import pandas as pd
-import ast
 import mysql.connector
 import os
 from dotenv import load_dotenv
