@@ -11,7 +11,9 @@ load_dotenv()
 
 passw = os.environ.get("PASSWORD")
 user = os.environ.get("USER")
-cnx = mysql.connector.connect(user=user, password=passw, host='127.0.0.1', database='sys')
+db_host = os.environ.get("DATABASEHOST")
+db_name = os.environ.get("DATABASENAME")
+cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
 cursor = cnx.cursor()
 
 get_convo_query = ("""SELECT senderId, receiverId, messageBody, timeSent
