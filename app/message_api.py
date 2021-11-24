@@ -59,7 +59,8 @@ def messages(userId, contactId):
       resp['messages'].append(message)
     
     return jsonify(resp), 200
-  except:
+  except Exception as e:
+    print(e)
     return jsonify({"code": 400}), 400
 
 @app.route('/message/<senderId>/<receiverId>/<messageBody>', methods=['POST'])
@@ -75,7 +76,8 @@ def post_message(senderId, receiverId, messageBody):
     call_query(cursor, add_message, (args['senderId'], args['receiverId'], args['messageBody']))
     cnx.commit()
     return jsonify({"code": 200}), 200
-  except:
+  except Exception as e:
+    print(e)
     return jsonify({"code": 405}), 405
 
 @app.route('/allConversations/<userId>')
@@ -98,7 +100,8 @@ def allConvos(userId):
       resp['conversations'].append(contactId[0])
     
     return jsonify(resp), 200
-  except:
+  except Exception as e:
+    print(e)
     return jsonify({"code": 405}), 405
 
 @app.route('/latestMessages/<userId>/<contactId>')
@@ -125,7 +128,8 @@ def latestMessages(userId, contactId):
       resp["sendTime"] = timeSent.strftime("%m/%d/%Y, %H:%M:%S")
 
     return jsonify(resp), 200
-  except:
+  except Exception as e:
+    print(e)
     return jsonify({"code": 405}), 405
 
 if __name__ == '__main__':
