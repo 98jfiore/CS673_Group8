@@ -44,7 +44,7 @@ def messages():
   try:
     args = request.json
     resp = {"code": 200, "messages": []}
-
+    print("data is " + format(args))
     # SELECT senderId, receiverId, messageBody, timeSent
     # FROM messages
     # WHERE (senderId=%s AND receiverId=%s) OR (senderId=%s AND receiverId=%s) ORDER BY timeSent""")
