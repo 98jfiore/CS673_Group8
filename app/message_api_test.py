@@ -104,13 +104,6 @@ class TestMessages:
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
     assert 200 == response["code"]
     assert 200 == rv.status_code
-
-    rv = client.get('/messages/1111/2222',
-      content_type='application/json', 
-      follow_redirects=True)
-    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
-    assert "messages" in response.keys()
-    assert len(response["messages"]) is 1
     
   @patch('message_api.call_query', mock_call_query)
   def test_all_conversations_bad(self, client):

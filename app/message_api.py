@@ -11,8 +11,6 @@ passw = os.environ.get("PASSWORD")
 user = os.environ.get("USER")
 db_host = os.environ.get("DATABASEHOST")
 db_name = os.environ.get("DATABASENAME")
-cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
-cursor = cnx.cursor()
 
 get_convo_query = ("""SELECT senderId, receiverId, messageBody, timeSent
         FROM messages
@@ -38,6 +36,9 @@ def call_query(curs, query, spec):
 
 @app.route('/messages/<userId>/<contactId>')
 def messages(userId, contactId):
+  cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
+  cursor = cnx.cursor()
+  
   #argument('userId', required=True)
   #argument('contactId', required=True)
 
@@ -65,6 +66,8 @@ def messages(userId, contactId):
 
 @app.route('/message/<senderId>/<receiverId>/<messageBody>', methods=['POST'])
 def post_message(senderId, receiverId, messageBody):
+  cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
+  cursor = cnx.cursor()
   #argument('senderId', required=True)
   #argument('receiverId', required=True)
   #argument('messageBody', required=True)
@@ -82,6 +85,8 @@ def post_message(senderId, receiverId, messageBody):
 
 @app.route('/allConversations/<userId>')
 def allConvos(userId):
+  cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
+  cursor = cnx.cursor()
   #argument('userId', required=True)
 
   try:
@@ -106,6 +111,8 @@ def allConvos(userId):
 
 @app.route('/latestMessages/<userId>/<contactId>')
 def latestMessages(userId, contactId):
+  cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
+  cursor = cnx.cursor()
   #argument('userId', required=True)
   #argument('contactId', required=True)
 
