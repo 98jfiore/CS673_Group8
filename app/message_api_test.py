@@ -22,7 +22,9 @@ class TestMessages:
   def client(self):
     db_fd, db_path = tempfile.mkstemp()
     app = api_app
-
+    app.config['DEBUG'] = True
+    app.config['TESTING'] = True
+    
     with app.test_client() as client:
       with app.app_context():
         #init_db
@@ -35,26 +37,19 @@ class TestMessages:
 
   @patch('message_api.call_query', mock_call_query)
   def test_get_messages_bad_input(self, client):
-    rv = client.get('/messages',
+    rv = client.get('/messages/',
       content_type='application/json', 
       follow_redirects=True)
-    response = json.loads(rv.get_data(as_text=True))
-    assert 400 == response['code']
-    assert 400 == rv.status_code
+    assert 404 == rv.status_code
 
-    rv = client.get('/messages',
-      data=json.dumps({'userId': 'aaaa'}),
+    rv = client.get('/messages/aaaa/',
       content_type='application/json', 
       follow_redirects=True)
-    response = json.loads(rv.get_data(as_text=True))
-    print(response)
-    assert 400 == response['code']
-    assert 400 == rv.status_code
+    assert 404 == rv.status_code
 
   @patch('message_api.call_query', mock_call_query)
   def test_get_messages_no_messages(self, client):
-    rv = client.get('/messages',
-      data=json.dumps({'userId': 'a', "contactId": 'b'}),
+    rv = client.get('/messages/a/b',
       content_type='application/json', 
       follow_redirects=True)
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
@@ -64,8 +59,7 @@ class TestMessages:
 
   @patch('message_api.call_query', mock_call_query)
   def test_get_messages_good_messages(self, client):
-    rv = client.get('/messages',
-      data=json.dumps({'userId': 'aaaa', "contactId": 'bbbb'}),
+    rv = client.get('/messages/aaaa/bbbb',
       content_type='application/json', 
       follow_redirects=True)
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
@@ -82,67 +76,53 @@ class TestMessages:
     rv = client.post('/message',
       content_type='application/json', 
       follow_redirects=True)
-    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
-    assert 405 == response["code"]
-    assert 405 == rv.status_code
+    assert 404 == rv.status_code
 
-    rv = client.post('/message',
-      data=json.dumps({'senderId': '1111'}),
+    rv = client.post('/message/1111',
       content_type='application/json', 
       follow_redirects=True)
-    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
-    assert 405 == response["code"]
-    assert 405 == rv.status_code
+    assert 404 == rv.status_code
 
-    rv = client.post('/message',
-      data=json.dumps({'senderId': '1111', 'receiverId': '2222'}),
+    rv = client.post('/message/1111/2222/',
       content_type='application/json', 
       follow_redirects=True)
-    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
-    assert 405 == response["code"]
-    assert 405 == rv.status_code
-  
+    assert 404 == rv.status_code
+    
   @patch('message_api.call_query', mock_call_query)
   @patch('mysql.connector.connection_cext.CMySQLConnection.commit', mock_commit)
   def test_post_messages_good(self, client):
-    rv = client.get('/messages',
-      data=json.dumps({'userId': '1111', "contactId": '2222'}),
+    rv = client.get('/messages/1111/2222',
       content_type='application/json', 
       follow_redirects=True)
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
     assert "messages" in response.keys()
     assert len(response["messages"]) is 0
   
-    rv = client.post('/message',
-      data=json.dumps({'senderId': '1111', 'receiverId': '2222', 'messageBody': 'Hi'}),
+    rv = client.post('/message/1111/2222/Hi',
       content_type='application/json', 
       follow_redirects=True)
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
     assert 200 == response["code"]
     assert 200 == rv.status_code
 
-    rv = client.get('/messages',
-      data=json.dumps({'userId': '1111', "contactId": '2222'}),
+    rv = client.get('/messages/1111/2222',
       content_type='application/json', 
       follow_redirects=True)
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
     assert "messages" in response.keys()
     assert len(response["messages"]) is 1
-
+    
   @patch('message_api.call_query', mock_call_query)
   def test_all_conversations_bad(self, client):
     rv = client.get('/allConversations',
       content_type='application/json', 
       follow_redirects=True)
     print(rv.get_data(as_text=True))
-    response = json.loads(rv.get_data(as_text=True))
-    assert 405 == response["code"]
-    assert 405 == rv.status_code
+    assert 404 == rv.status_code
   
   @patch('message_api.call_query', mock_call_query)
   def test_all_conversations_good(self, client):
-    rv = client.get('/allConversations',
-      data=json.dumps({'userId': 'aaaa'}),
+    rv = client.get('/allConversations/aaaa',
       content_type='application/json', 
       follow_redirects=True)
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
@@ -158,23 +138,17 @@ class TestMessages:
     rv = client.get('/latestMessages',
       content_type='application/json', 
       follow_redirects=True)
-    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
-    assert 405 == response["code"]
-    assert 405 == rv.status_code
+    assert 404 == rv.status_code
 
-    rv = client.get('/latestMessages',
+    rv = client.get('/latestMessages/aaaa',
       content_type='application/json', 
-      data=json.dumps({'userId': 'aaaa'}),
       follow_redirects=True)
-    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
-    assert 405 == response["code"]
-    assert 405 == rv.status_code
+    assert 404 == rv.status_code
   
   @patch('message_api.call_query', mock_call_query)
   def test_latest_messages_good(self, client):
-    rv = client.get('/latestMessages',
+    rv = client.get('/latestMessages/aaaa/bbbb',
       content_type='application/json', 
-      data=json.dumps({'userId': 'aaaa', "contactId": 'bbbb'}),
       follow_redirects=True)
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
     assert "Goodbye Forever" in response["text"]

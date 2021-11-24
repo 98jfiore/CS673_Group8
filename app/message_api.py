@@ -36,13 +36,13 @@ api = Api(app)
 def call_query(curs, query, spec):
   curs.execute(query, spec)
 
-@app.route('/messages/')
-def messages():
+@app.route('/messages/<userId>/<contactId>')
+def messages(userId, contactId):
   #argument('userId', required=True)
   #argument('contactId', required=True)
 
   try:
-    args = request.json
+    args = request.view_args
     resp = {"code": 200, "messages": []}
     print("data is " + format(args))
     # SELECT senderId, receiverId, messageBody, timeSent
@@ -62,14 +62,14 @@ def messages():
   except:
     return jsonify({"code": 400}), 400
 
-@app.route('/message/', methods=['POST'])
-def post_message():
+@app.route('/message/<senderId>/<receiverId>/<messageBody>', methods=['POST'])
+def post_message(senderId, receiverId, messageBody):
   #argument('senderId', required=True)
   #argument('receiverId', required=True)
   #argument('messageBody', required=True)
 
   try:
-    args = request.get_json()
+    args = request.view_args
     # INSERT INTO messages
     # VALUES (%s, %s, %s, CURRENT_TIMESTAMP, NULL)
     call_query(cursor, add_message, (args['senderId'], args['receiverId'], args['messageBody']))
@@ -78,14 +78,13 @@ def post_message():
   except:
     return jsonify({"code": 405}), 405
 
-@app.route('/allConversations/')
-def allConvos():
+@app.route('/allConversations/<userId>')
+def allConvos(userId):
   #argument('userId', required=True)
 
   try:
-    args = request.get_json()
+    args = request.view_args
     resp = {"code": 200, "conversations": []}
-    
     # SELECT DISTINCT receiverId
     # FROM messages
     # WHERE senderId=%s UNION 
@@ -102,13 +101,13 @@ def allConvos():
   except:
     return jsonify({"code": 405}), 405
 
-@app.route('/latestMessages')
-def latestMessages():
+@app.route('/latestMessages/<userId>/<contactId>')
+def latestMessages(userId, contactId):
   #argument('userId', required=True)
   #argument('contactId', required=True)
 
   try:
-    args = request.get_json()
+    args = request.view_args
     resp = {"code": 200}
 
     # SELECT senderId, receiverId, messageBody, timeSent
