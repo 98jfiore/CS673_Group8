@@ -42,14 +42,15 @@ def messages():
   #argument('contactId', required=True)
 
   try:
-    args = request.get_json()
+    args = request.json
     resp = {"code": 200, "messages": []}
 
     # SELECT senderId, receiverId, messageBody, timeSent
     # FROM messages
     # WHERE (senderId=%s AND receiverId=%s) OR (senderId=%s AND receiverId=%s) ORDER BY timeSent""")
+    print("HERE")
     call_query(cursor, get_convo_query, (args['userId'],args['contactId'],args['contactId'],args['userId'],))
-
+    print("HERE")
     for (senderId, receiverId, messageBody, timeSent) in cursor:
       message = {"text": messageBody,
                   "sender": senderId,
