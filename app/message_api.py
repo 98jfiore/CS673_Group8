@@ -56,7 +56,9 @@ def messages(userId, contactId):
       message = {"text": messageBody,
                   "sender": senderId,
                   "receiver": receiverId,
-                  "sendTime": timeSent.strftime("%m/%d/%Y, %H:%M:%S")}
+                  "sendTime": timeSent.strftime("%m/%d/%Y, %H:%M:%S"),
+                  "user":{"id":userId}
+                  }
       resp['messages'].append(message)
     
     return jsonify(resp), 200
