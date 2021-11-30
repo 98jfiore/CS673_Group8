@@ -104,7 +104,7 @@ def allConvos(userId):
       (args['userId'],args['userId'],))
 
     for (contactId) in cursor:
-      resp['conversations'].append(contactId[0])
+      resp['conversations'].append({"id": contactId[0]})
     
     return jsonify(resp), 200
   except Exception as e:

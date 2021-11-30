@@ -122,8 +122,8 @@ class TestMessages:
     print(response)
     assert "conversations" in response.keys()
     assert len(response["conversations"]) is 2
-    assert "bbbb" in response["conversations"]
-    assert "cccc" in response["conversations"]
+    assert {"id": "bbbb"} in response["conversations"]
+    assert {"id": "cccc"} in response["conversations"]
     assert 200 == rv.status_code
   
   @patch('message_api.call_query', mock_call_query)
