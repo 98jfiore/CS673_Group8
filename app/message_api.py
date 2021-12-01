@@ -57,7 +57,7 @@ def messages(userId, contactId):
                   "sender": senderId,
                   "receiver": receiverId,
                   "sendTime": timeSent.strftime("%m/%d/%Y, %H:%M:%S"),
-                  "user":{"id":userId}
+                  "user":{"_id":userId}
                   }
       resp['messages'].append(message)
     
