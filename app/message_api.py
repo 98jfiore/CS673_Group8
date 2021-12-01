@@ -56,7 +56,7 @@ def messages(userId, contactId):
       message = {"text": messageBody,
                   "sender": senderId,
                   "receiver": receiverId,
-                  "sendTime": timeSent.strftime("%m/%d/%Y, %H:%M:%S"),
+                  "createdAt": timeSent.strftime("%m/%d/%Y, %H:%M:%S"),
                   "user":{"_id":userId}
                   }
       resp['messages'].append(message)
@@ -134,7 +134,7 @@ def latestMessages(userId, contactId):
       resp["text"] = messageBody
       resp["sender"] = senderId,
       resp["receiver"] = receiverId,
-      resp["sendTime"] = timeSent.strftime("%m/%d/%Y, %H:%M:%S")
+      resp["createdAt"] = timeSent.strftime("%m/%d/%Y, %H:%M:%S")
 
     return jsonify(resp), 200
   except Exception as e:
