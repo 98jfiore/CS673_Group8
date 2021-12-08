@@ -64,12 +64,14 @@ def messages(userId, contactId):
     
     response = jsonify(resp)
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 200
   except Exception as e:
     print(e)
     response = jsonify({"code": 400})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 400
 
@@ -89,12 +91,14 @@ def post_message(senderId, receiverId, messageBody):
     cnx.commit()
     response = jsonify({"code": 200})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 200
   except Exception as e:
     print(e)
     response = jsonify({"code": 405})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 405
 
@@ -121,12 +125,14 @@ def allConvos(userId):
     
     response = jsonify(resp)
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 200
   except Exception as e:
     print(e)
     response = jsonify({"code": 405})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 405
 
@@ -157,12 +163,14 @@ def latestMessages(userId, contactId):
 
     response = jsonify(resp)
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 200
   except Exception as e:
     print(e)
     response = jsonify({"code": 405})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 405
 
