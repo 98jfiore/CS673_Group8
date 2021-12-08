@@ -64,11 +64,13 @@ def messages(userId, contactId):
     
     response = jsonify(resp)
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 200
   except Exception as e:
     print(e)
     response = jsonify({"code": 400})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 400
 
 @app.route('/message/<senderId>/<receiverId>/<messageBody>', methods=['POST'])
@@ -87,11 +89,13 @@ def post_message(senderId, receiverId, messageBody):
     cnx.commit()
     response = jsonify({"code": 200})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 200
   except Exception as e:
     print(e)
     response = jsonify({"code": 405})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 405
 
 @app.route('/allConversations/<userId>')
@@ -117,11 +121,13 @@ def allConvos(userId):
     
     response = jsonify(resp)
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 200
   except Exception as e:
     print(e)
     response = jsonify({"code": 405})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 405
 
 @app.route('/latestMessages/<userId>/<contactId>')
@@ -151,11 +157,13 @@ def latestMessages(userId, contactId):
 
     response = jsonify(resp)
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 200
   except Exception as e:
     print(e)
     response = jsonify({"code": 405})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 405
 
 if __name__ == '__main__':
