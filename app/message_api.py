@@ -4,6 +4,7 @@ from mock.mock import call
 import mysql.connector
 import os
 from dotenv import load_dotenv
+from werkzeug.wrappers import response
 
 load_dotenv()
 
@@ -61,10 +62,14 @@ def messages(userId, contactId):
                   }
       resp['messages'].append(message)
     
-    return jsonify(resp), 200
+    response = jsonify(resp)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 200
   except Exception as e:
     print(e)
-    return jsonify({"code": 400}), 400
+    response = jsonify({"code": 400})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 400
 
 @app.route('/message/<senderId>/<receiverId>/<messageBody>', methods=['POST'])
 def post_message(senderId, receiverId, messageBody):
@@ -80,10 +85,14 @@ def post_message(senderId, receiverId, messageBody):
     # VALUES (%s, %s, %s, CURRENT_TIMESTAMP, NULL)
     call_query(cursor, add_message, (args['senderId'], args['receiverId'], args['messageBody']))
     cnx.commit()
-    return jsonify({"code": 200}), 200
+    response = jsonify({"code": 200})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 200
   except Exception as e:
     print(e)
-    return jsonify({"code": 405}), 405
+    response = jsonify({"code": 405})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 405
 
 @app.route('/allConversations/<userId>')
 def allConvos(userId):
@@ -106,10 +115,14 @@ def allConvos(userId):
     for (contactId) in cursor:
       resp['conversations'].append({"id": contactId[0]})
     
-    return jsonify(resp), 200
+    response = jsonify(resp)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 200
   except Exception as e:
     print(e)
-    return jsonify({"code": 405}), 405
+    response = jsonify({"code": 405})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 405
 
 @app.route('/latestMessages/<userId>/<contactId>')
 def latestMessages(userId, contactId):
@@ -136,10 +149,14 @@ def latestMessages(userId, contactId):
       resp["receiver"] = receiverId,
       resp["createdAt"] = timeSent.strftime("%m/%d/%Y, %H:%M:%S")
 
-    return jsonify(resp), 200
+    response = jsonify(resp)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 200
   except Exception as e:
     print(e)
-    return jsonify({"code": 405}), 405
+    response = jsonify({"code": 405})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 405
 
 if __name__ == '__main__':
   app.run()
