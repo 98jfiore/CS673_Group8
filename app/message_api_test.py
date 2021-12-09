@@ -127,6 +127,17 @@ class TestMessages:
     assert 200 == rv.status_code
   
   @patch('message_api.call_query', mock_call_query)
+  def test_all_conversations_none(self, client):
+    rv = client.get('/allConversations/zzzz',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    print(response)
+    assert "conversations" in response.keys()
+    assert len(response["conversations"]) is 0
+    assert 200 == rv.status_code
+  
+  @patch('message_api.call_query', mock_call_query)
   def test_latest_messages_bad(self, client):
     rv = client.get('/latestMessages',
       content_type='application/json', 
@@ -145,4 +156,14 @@ class TestMessages:
       follow_redirects=True)
     response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
     assert "Goodbye Forever" in response["text"]
+    assert 200 == rv.status_code
+  
+  @patch('message_api.call_query', mock_call_query)
+  def test_latest_messages_none(self, client):
+    rv = client.get('/latestMessages/zzzz/xxxx',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    print(response)
+    assert "" in response["text"]
     assert 200 == rv.status_code

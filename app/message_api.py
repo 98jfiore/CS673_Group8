@@ -39,20 +39,14 @@ def call_query(curs, query, spec):
 def messages(userId, contactId):
   cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
   cursor = cnx.cursor()
-  
-  #argument('userId', required=True)
-  #argument('contactId', required=True)
 
   try:
     args = request.view_args
     resp = {"code": 200, "messages": []}
-    print("data is " + format(args))
     # SELECT senderId, receiverId, messageBody, timeSent
     # FROM messages
     # WHERE (senderId=%s AND receiverId=%s) OR (senderId=%s AND receiverId=%s) ORDER BY timeSent""")
-    print("HERE")
     call_query(cursor, get_convo_query, (args['userId'],args['contactId'],args['contactId'],args['userId'],))
-    print("HERE")
     for (senderId, receiverId, messageBody, timeSent) in cursor:
       message = {"text": messageBody,
                   "sender": senderId,
@@ -75,13 +69,10 @@ def messages(userId, contactId):
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 400
 
-@app.route('/message/<senderId>/<receiverId>/<messageBody>', methods=['POST'])
+@app.route('/message/<senderId>/<receiverId>/<messageBody>', methods=['POST', 'GET'])
 def post_message(senderId, receiverId, messageBody):
   cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
   cursor = cnx.cursor()
-  #argument('senderId', required=True)
-  #argument('receiverId', required=True)
-  #argument('messageBody', required=True)
 
   try:
     args = request.view_args
@@ -106,7 +97,6 @@ def post_message(senderId, receiverId, messageBody):
 def allConvos(userId):
   cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
   cursor = cnx.cursor()
-  #argument('userId', required=True)
 
   try:
     args = request.view_args
@@ -140,8 +130,6 @@ def allConvos(userId):
 def latestMessages(userId, contactId):
   cnx = mysql.connector.connect(user=user, password=passw, host=db_host, database=db_name)
   cursor = cnx.cursor()
-  #argument('userId', required=True)
-  #argument('contactId', required=True)
 
   try:
     args = request.view_args
@@ -161,6 +149,12 @@ def latestMessages(userId, contactId):
       resp["receiver"] = receiverId,
       resp["createdAt"] = timeSent.strftime("%m/%d/%Y, %H:%M:%S")
 
+    if "text" not in resp.keys():
+      resp["text"] = ""
+      resp["sender"] = ""
+      resp["receiver"] = ""
+      resp["createdAt"] = ""
+    
     response = jsonify(resp)
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Max-Age", "1000000")
