@@ -106,6 +106,23 @@ class TestMessages:
     assert 200 == rv.status_code
     
   @patch('message_api.call_query', mock_call_query)
+  @patch('mysql.connector.connection_cext.CMySQLConnection.commit', mock_commit)
+  def test_post_messages_empty(self, client):
+    rv = client.get('/messages/1111/2222',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert "messages" in response.keys()
+    assert len(response["messages"]) is 0
+  
+    rv = client.post('/message/1111/2222/ ',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert 200 == response["code"]
+    assert 200 == rv.status_code
+    
+  @patch('message_api.call_query', mock_call_query)
   def test_all_conversations_bad(self, client):
     rv = client.get('/allConversations',
       content_type='application/json', 
@@ -167,3 +184,45 @@ class TestMessages:
     print(response)
     assert "" in response["text"]
     assert 200 == rv.status_code
+  
+  @patch('message_api.call_query', mock_call_query)
+  def test_unchecked_messages_bad(self, client):
+    rv = client.get('/uncheckedMessages',
+      content_type='application/json', 
+      follow_redirects=True)
+    assert 404 == rv.status_code
+  
+  @patch('message_api.call_query', mock_call_query)
+  def test_unchecked_messages_empty(self, client):
+    rv = client.get('/uncheckedMessages/9999',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert 200 == rv.status_code
+    assert "missedMessages" in response.keys()
+    assert response["missedMessages"] == 0
+  
+  @patch('message_api.call_query', mock_call_query)
+  def test_unchecked_messages_good(self, client):
+    rv = client.get('/uncheckedMessages/1234',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert 200 == rv.status_code
+    assert "missedMessages" in response.keys()
+    assert response["missedMessages"] == 0
+  
+    rv = client.post('/message/1111/1234/Hi',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert 200 == response["code"]
+    assert 200 == rv.status_code
+    
+    rv = client.get('/uncheckedMessages/1234',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert 200 == rv.status_code
+    assert "missedMessages" in response.keys()
+    assert response["missedMessages"] == 1

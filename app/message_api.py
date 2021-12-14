@@ -31,6 +31,8 @@ get_latest_message_query = ("""SELECT senderId, receiverId, messageBody, timeSen
 app = Flask(__name__)
 api = Api(app)
 
+sentmessages = {}
+
 #Here for the express purpose of making tests easier
 def call_query(curs, query, spec):
   curs.execute(query, spec)
@@ -84,6 +86,13 @@ def post_message(senderId, receiverId, messageBody):
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Max-Age", "1000000")
     response.headers.add("Access-Control-Allow-Methods", "*")
+    
+    #For alerts
+    if args['receiverId'] not in sentmessages:
+      sentmessages[args['receiverId']] = 1
+    else:
+      sentmessages[args['receiverId']] = sentmessages[args['receiverId']] + 1
+    
     return response, 200
   except Exception as e:
     print(e)
@@ -168,5 +177,31 @@ def latestMessages(userId, contactId):
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response, 405
 
+@app.route('/uncheckedMessages/<userId>')
+def uncheckedMessages(userId):
+  try:
+    args = request.view_args
+    resp = {"code": 200}
+
+    if args['userId'] not in sentmessages:
+      resp['missedMessages'] = 0
+    else:
+      resp['missedMessages'] = sentmessages[args['userId']]
+      sentmessages[args['userId']] = 0
+      
+    
+    response = jsonify(resp)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
+    response.headers.add("Access-Control-Allow-Methods", "*")      
+    return response, 200
+  except Exception as e:
+    print(e)
+    response = jsonify({"code": 405})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Max-Age", "1000000")
+    response.headers.add("Access-Control-Allow-Methods", "*")
+    return response, 405
+  
 if __name__ == '__main__':
   app.run()
