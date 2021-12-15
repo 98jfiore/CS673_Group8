@@ -1,0 +1,3 @@
+[submodule "medical-app"]
+	path = medical-app
+	url = https://github.com/thorannath/medical-app
