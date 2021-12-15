@@ -226,3 +226,11 @@ class TestMessages:
     assert 200 == rv.status_code
     assert "missedMessages" in response.keys()
     assert response["missedMessages"] == 1
+    
+    rv = client.get('/uncheckedMessages/1234',
+      content_type='application/json', 
+      follow_redirects=True)
+    response = json.loads(rv.data.decode("utf-8").replace("'", '"'))
+    assert 200 == rv.status_code
+    assert "missedMessages" in response.keys()
+    assert response["missedMessages"] == 0
